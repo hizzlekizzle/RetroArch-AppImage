@@ -35,7 +35,7 @@ else
 	echo "Cleaning up old AppDir" && rm -rf AppDir && mkdir -p AppDir
 fi
 
-echo "Installing dependencies" && apt-get build-dep retroarch
+echo "Installing dependencies" && sudo apt-get build-dep retroarch
 
 echo "building RetroArch with these flags: $CONFIGURE_FLAGS" && echo "This will take a minute..." && ./configure $CONFIGURE_FLAGS --prefix=/usr > /dev/null 2>&1 && make -j"$NUM_CORES" > /dev/null 2>&1 && echo "RetroArch built successfully"
 
