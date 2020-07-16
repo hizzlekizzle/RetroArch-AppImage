@@ -8,12 +8,19 @@ on:
 
 jobs:
   build:
-
+    name: Build RetroArch AppImage
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: install-deps
+    - name: Fetch dependencies
       run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
-    - name: make
-      run: make
+    - name: build the program
+      run: ./retroarch-appimage-recipe.sh
+    - name: Upload binaries
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/RetroArch.AppImage
+        asset_name: RetroArch.AppImage
+        overwrite: true
