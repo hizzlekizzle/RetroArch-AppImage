@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+	- name: install-deps
+	  run: sudo apt-get build-dep retroarch
     - name: make
       run: make
