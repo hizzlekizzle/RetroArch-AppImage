@@ -52,7 +52,7 @@ jobs:
     - name: Fetch core info
       run: cd cores && wget https://buildbot.libretro.com/assets/frontend/info.zip && unzip info.zip && rm info.zip
     - name: Zip it up!
-      run: 7z a RetroArch-Nightly.AppImage.config.7z *
+      run: 7z a -x'!retroarch-appimage-recipe.sh' -x'!README.md' -x'!LICENSE' RetroArch-Nightly.AppImage.config.7z *
     - name: Upload assets bundle
       uses: svenstaro/upload-release-action@v2
       with:
