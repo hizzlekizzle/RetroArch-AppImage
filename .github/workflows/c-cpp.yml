@@ -3,6 +3,9 @@ name: RetroArch AppImage Nightly Build
 on:
   schedule:
   - cron: "0 5 * * *"
+  watch:
+    types: [started]
+    if: github.actor == github.event.repository.owner.login
 
 jobs:
   build:
