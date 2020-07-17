@@ -55,9 +55,9 @@ jobs:
       run: p7zip RetroArch-Nightly.AppImage.config
     - name: Upload assets bundle
       uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: RetroArch-Nightly.AppImage.config.7z
-          tag: Nightlies
-          asset_name: AppImage Portable Assets
-          overwrite: true
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: RetroArch-Nightly.AppImage.config.7z
+        tag: Nightlies
+        asset_name: AppImage Portable Assets
+        overwrite: true
