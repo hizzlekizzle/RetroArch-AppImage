@@ -39,6 +39,6 @@ echo "building RetroArch with these flags: $CONFIGURE_FLAGS" && echo "This will 
 
 make install DESTDIR=AppDir prefix=/usr > /dev/null 2>&1 && echo "RetroArch installed to AppDir successfully"
 
-echo "bundling RetroArch AppImage" && ../"$LINUXDEPLOY" --appdir AppDir --output appimage > /dev/null 2>&1 && echo "RetroArch AppImage created successfully" && mv RetroArch*.AppImage ../ && cd ..
+echo "bundling RetroArch AppImage" && ../"$LINUXDEPLOY" --appdir AppDir --output appimage > /dev/null 2>&1 && echo "RetroArch AppImage created successfully" && mv RetroArch*.AppImage ../RetroArch-Nightly.AppImage && cd ..
 
 echo "All done!" && exit 0
