@@ -8,14 +8,14 @@ on:
     if: github.actor == github.event.repository.owner.login
 
 jobs:
-  build:
+  job1:
     name: Build RetroArch AppImage
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
     - name: Fetch dependencies
-      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev p7zip-full
+      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
     - name: Build and bundle RetroArch
       run: ./retroarch-appimage-recipe.sh
     - name: Upload RetroArch AppImage
@@ -26,22 +26,38 @@ jobs:
         tag: Nightlies
         asset_name: RetroArch-Nightly.AppImage
         overwrite: true
+
+  job2:
+    name: Fetch and bundle assets
+    runs-on: ubuntu-latest
+      
+    steps:
     - uses: actions/checkout@v2
-    - name: Fetch and bundle assets
+    - name: Fetch dependencies
+      run: sudo apt-get update ; sudo apt-get install p7zip-full
+    - name: Make dirs
       run: mkdir RetroArch-Nightly.AppImage.config && cd RetroArch-Nightly.AppImage.config && mkdir assets cores overlays autoconfig shaders database cheats
+    - name: Fetch assets
       run: cd RetroArch-Nightly.AppImage.config/assets && git clone https://github.com/libretro/retroarch-assets.git
+    - name: Fetch overlays
       run: cd RetroArch-Nightly.AppImage.config/overlays && git clone https://github.com/libretro/common-overlays.git
+    - name: Fetch autoconfigs
       run: cd RetroArch-Nightly.AppImage.config/autoconfig && git clone https://github.com/libretro/retroarch-joypad-autoconfig.git
+    - name: Fetch shaders
       run: cd RetroArch-Nightly.AppImage.config/shaders && git clone https://github.com/libretro/glsl-shaders.git && git clone https://github.com/libretro/slang-shaders.git
+    - name: Fetch databases
       run: cd RetroArch-Nightly.AppImage.config/database && wget https://buildbot.libretro.com/assets/frontend/database-rdb.zip && unzip database-rdb.zip && rm database-rdb.zip
+    - name: Fetch cheats
       run: cd RetroArch-Nightly.AppImage.config/cheats && wget https://buildbot.libretro.com/assets/frontend/cheats.zip && unzip cheats.zip && rm cheats.zip
+    - name: Fetch core info
       run: cd RetroArch-Nightly.AppImage.config/cores && wget https://buildbot.libretro.com/assets/frontend/info.zip && unzip info.zip && rm info.zip
+    - name: Zip it up!
       run: p7zip RetroArch-Nightly.AppImage.config
     - name: Upload assets bundle
       uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: RetroArch-Nightly.AppImage.config.7z
-        tag: Nightlies
-        asset_name: AppImage Portable Assets
-        overwrite: true
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: RetroArch-Nightly.AppImage.config.7z
+          tag: Nightlies
+          asset_name: AppImage Portable Assets
+          overwrite: true
