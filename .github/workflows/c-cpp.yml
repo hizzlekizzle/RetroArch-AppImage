@@ -40,7 +40,7 @@ jobs:
     - name: Fetch dependencies
       run: sudo apt-get update ; sudo apt-get install p7zip-full
     - name: Make dirs
-      run: mkdir mkdir assets cores shaders database cheats
+      run: mkdir assets cores shaders database cheats
     - name: Fetch assets
       run: cd assets && wget https://buildbot.libretro.com/assets/frontend/assets.zip && unzip assets.zip && rm assets.zip
     - name: Fetch overlays
