@@ -3,6 +3,9 @@ name: RetroArch AppImage Nightly Build
 on:
   schedule:
   - cron: "0 5 * * *"
+  watch:
+    types: [started]
+    if: github.actor == github.event.repository.owner.login
 
 jobs:
   job1:
@@ -23,9 +26,9 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: RetroArch-Nightly.AppImage
+        file: RetroArch-Linux-x86_64-Nightly.AppImage
         tag: Nightlies
-        asset_name: RetroArch-Nightly.AppImage
+        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage
         overwrite: true
 
   job2:
@@ -58,8 +61,8 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: RetroArch-Nightly.AppImage.config.7z
+        file: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
         tag: Nightlies
-        asset_name: RetroArch-Nightly.AppImage.config.7z
+        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
         overwrite: true
 
