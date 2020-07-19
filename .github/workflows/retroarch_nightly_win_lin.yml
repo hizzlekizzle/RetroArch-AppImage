@@ -8,7 +8,7 @@ on:
     if: github.actor == github.event.repository.owner.login
 
 jobs:
-  Build Linux Nightly:
+  Linux:
     name: Build RetroArch Linux AppImage Nightly
     runs-on: ubuntu-latest
 
@@ -31,7 +31,7 @@ jobs:
         asset_name: RetroArch-Linux-x86_64-Nightly.AppImage
         overwrite: true
 
-  Bundle Optional Linux Assets:
+  Linux_Assets:
     name: Fetch and bundle assets
     runs-on: ubuntu-latest
       
@@ -66,7 +66,7 @@ jobs:
         asset_name: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
         overwrite: true
 
-  Build Windows Nightly:
+  Windows:
     name: Build RetroArch Windows Nightly
     runs-on: windows-latest
 
