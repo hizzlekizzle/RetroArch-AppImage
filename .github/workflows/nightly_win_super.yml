@@ -19,5 +19,5 @@ jobs:
     - name: Fetch the source
       run: msys2do git clone https://github.com/libretro/libretro-super.git
     - name: Run the release script
-      working_directory: libretro-super
+      working-directory: libretro-super
       run: ./retroarch-release.sh
