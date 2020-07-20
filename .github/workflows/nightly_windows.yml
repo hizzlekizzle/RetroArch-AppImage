@@ -36,6 +36,12 @@ jobs:
         msys2do mkdir database
         msys2do mkdir cheats
         msys2do mkdir info
+    - name: Gather the libs
+      working-directory: RetroArch
+      run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
+    - name: Free up some disk space
+      working-directory: RetroArch
+      run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-i686-qt5 mingw-w64-i686-openssl
     - name: Fetch assets
       working-directory: working_dir/assets
       run: msys2do wget https://buildbot.libretro.com/assets/frontend/assets.zip && msys2do unzip assets.zip && msys2do rm assets.zip
@@ -60,11 +66,6 @@ jobs:
     - name: Fetch core info
       working-directory: working_dir/info
       run: msys2do wget https://buildbot.libretro.com/assets/frontend/info.zip && msys2do unzip info.zip && msys2do rm info.zip
-    - name: Gather the libs
-      working-directory: RetroArch
-      run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
-    - name: Remove packages to free up disk space
-      run: msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-i686-qt5 mingw-w64-i686-openssl
     - name: Move executables to working dir (libs are already there)
       working-directory: RetroArch
       run: mv *.exe ../working_dir
