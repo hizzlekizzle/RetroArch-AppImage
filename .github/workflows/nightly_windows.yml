@@ -41,7 +41,7 @@ jobs:
       run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
     - name: Free up some disk space
       working-directory: RetroArch
-      run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-i686-qt5 mingw-w64-i686-openssl
+      run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt5 mingw-w64-x86_64-openssl
     - name: Fetch assets
       working-directory: working_dir/assets
       run: msys2do wget https://buildbot.libretro.com/assets/frontend/assets.zip && msys2do unzip assets.zip && msys2do rm assets.zip
