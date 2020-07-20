@@ -22,7 +22,7 @@ jobs:
       run: msys2do git clone https://github.com/libretro/RetroArch.git
     - name: Configure
       working-directory: RetroArch
-      run: msys2do ./configure
+      run: msys2do ./configure --enable-qt
     - name: Build
       working-directory: RetroArch
       run: msys2do make -j8
