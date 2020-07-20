@@ -69,12 +69,12 @@ jobs:
     - name: Move executables to working dir (libs are already there)
       working-directory: RetroArch
       run: mv *.exe ../working_dir
-    - name: Zip just the executables and libs
-      working-directory: working_dir
-      run: 7z a -mx=9 RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
     - name: Zip the full release
       working-directory: working_dir
       run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Full.7z *
+    - name: Zip just the executables and libs
+      working-directory: working_dir
+      run: 7z a -mx=9 RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
     - name: Upload RetroArch release bundle
       uses: svenstaro/upload-release-action@v2
       with:
