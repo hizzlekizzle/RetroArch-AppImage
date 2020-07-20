@@ -16,7 +16,7 @@ jobs:
     - uses: numworks/setup-msys2@v1
       with:
         msystem: MINGW64
-    - run: msys2do pacman -S --noconfirm --disable-download-timeout --needed wget git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-zlib mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libxml2 mingw-w64-x86_64-freetype mingw-w64-x86_64-python3 mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-drmingw mingw-w64-i686-qt5 mingw-w64-i686-openssl unzip p7zip
+    - run: msys2do pacman -S --noconfirm --disable-download-timeout --needed wget git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-zlib mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libxml2 mingw-w64-x86_64-freetype mingw-w64-x86_64-python3 mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-drmingw mingw-w64-x86_64-qt5 mingw-w64-x86_64-openssl unzip p7zip
     - uses: actions/checkout@v2
     - name: Fetch the source
       run: msys2do git clone https://github.com/libretro/RetroArch.git
