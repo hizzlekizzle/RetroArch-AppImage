@@ -1,73 +1,15 @@
-name: RetroArch Nightly Build Recipe
+name: RetroArch Windows Nightly Build
 
 on:
   schedule:
-  - cron: "0 5 * * *" # build every night at midnight Eastern
-  watch: # this is a hack that lets repo owners trigger a build by starring
+  - cron: "0 5 * * *"
+  watch:
     types: [started]
     if: github.actor == github.event.repository.owner.login
 
 jobs:
-  Linux:
-    name: Build RetroArch Linux AppImage Nightly
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Fetch dependencies
-      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
-    - name: Fetch linuxdeploy
-      run: wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod +x linuxdeploy-x86_64.AppImage
-    - name: Fetch RetroArch source tree
-      run: git clone https://github.com/libretro/RetroArch.git
-    - name: Build RetroArch
-      run: cd RetroArch && mkdir AppDir && ./configure --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Nightly.AppImage
-    - name: Upload RetroArch AppImage
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: RetroArch-Linux-x86_64-Nightly.AppImage
-        tag: Nightlies
-        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage
-        overwrite: true
-
-  Linux_Assets:
-    name: Fetch and bundle assets
-    runs-on: ubuntu-latest
-      
-    steps:
-    - uses: actions/checkout@v2
-    - name: Fetch dependencies
-      run: sudo apt-get update ; sudo apt-get install p7zip-full
-    - name: Make dirs
-      run: mkdir assets cores shaders database cheats
-    - name: Fetch assets
-      run: cd assets && wget https://buildbot.libretro.com/assets/frontend/assets.zip && unzip assets.zip && rm assets.zip
-    - name: Fetch overlays
-      run: git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays
-    - name: Fetch autoconfigs
-      run: git clone https://github.com/libretro/retroarch-joypad-autoconfig.git && mv retroarch-joypad-autoconfig autoconfig
-    - name: Fetch shaders
-      run: cd shaders && git clone https://github.com/libretro/glsl-shaders.git && git clone https://github.com/libretro/slang-shaders.git
-    - name: Fetch databases
-      run: cd database && wget https://buildbot.libretro.com/assets/frontend/database-rdb.zip && unzip database-rdb.zip && rm database-rdb.zip
-    - name: Fetch cheats
-      run: cd cheats && wget https://buildbot.libretro.com/assets/frontend/cheats.zip && unzip cheats.zip && rm cheats.zip
-    - name: Fetch core info
-      run: cd cores && wget https://buildbot.libretro.com/assets/frontend/info.zip && unzip info.zip && rm info.zip
-    - name: Zip it up!
-      run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' RetroArch-Nightly.AppImage.config.7z *
-    - name: Upload assets bundle
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
-        tag: Nightlies
-        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
-        overwrite: true
-
-  Windows:
-    name: Build RetroArch Windows Nightly
+  job1:
+    name: Build RetroArch Nightly Windows
     runs-on: windows-latest
 
     steps:
@@ -116,7 +58,7 @@ jobs:
       run: msys2do wget https://buildbot.libretro.com/assets/frontend/info.zip && msys2do unzip info.zip && msys2do rm info.zip
     - name: Gather the libs
       run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ./working_dir}
-    - name: Remove packages to free up disk space # stupid fix to stupid problem
+    - name: Remove packages to free up disk space
       run: msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-i686-qt5 mingw-w64-i686-openssl
     - name: Move executables to working dir (libs are already there)
       run: mv *.exe working_dir
