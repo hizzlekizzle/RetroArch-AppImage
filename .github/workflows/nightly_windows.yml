@@ -71,15 +71,15 @@ jobs:
       run: mv *.exe ../working_dir
     - name: Zip just the executables and libs
       working-directory: working_dir
-      run: 7z a -mx=9 ../RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
+      run: 7z a -mx=9 RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
     - name: Zip the full release
       working-directory: working_dir
-      run: 7z a -mx=9 ../RetroArch-Win-x86_64-Nightly_Full.7z *
+      run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Full.7z *
     - name: Upload RetroArch release bundle
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: RetroArch-Win-x86_64_Nightly_Full.7z
+        file: working_dir/RetroArch-Win-x86_64-Nightly_Full.7z
         tag: Nightlies
         asset_name: RetroArch-Win-x86_64-Nightly_Full.7z
         overwrite: true
@@ -87,7 +87,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: RetroArch-Update-Pack-Win-x86_64-Nightly.7z
+        file: working_dir/RetroArch-Update-Pack-Win-x86_64-Nightly.7z
         tag: Nightlies
         asset_name: RetroArch-Update-Pack-Win-x86_64-Nightly.7z
         overwrite: true
