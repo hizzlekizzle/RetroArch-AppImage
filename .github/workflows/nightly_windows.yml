@@ -18,9 +18,13 @@ jobs:
         msystem: MINGW64
     - run: msys2do pacman -S --noconfirm --disable-download-timeout --needed wget git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-zlib mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libxml2 mingw-w64-x86_64-freetype mingw-w64-x86_64-python3 mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-drmingw mingw-w64-i686-qt5 mingw-w64-i686-openssl unzip p7zip
     - uses: actions/checkout@v2
+    - name: Fetch the source
+      run: msys2do git clone https://github.com/libretro/RetroArch.git
     - name: Configure
+      working-directory: RetroArch
       run: msys2do ./configure
     - name: Build
+      working-directory: RetroArch
       run: msys2do make -j8
     - name: Setup working dir
       run: mkdir working_dir
@@ -57,11 +61,13 @@ jobs:
       working-directory: working_dir/info
       run: msys2do wget https://buildbot.libretro.com/assets/frontend/info.zip && msys2do unzip info.zip && msys2do rm info.zip
     - name: Gather the libs
-      run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ./working_dir}
+      working-directory: RetroArch
+      run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
     - name: Remove packages to free up disk space
       run: msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-i686-qt5 mingw-w64-i686-openssl
     - name: Move executables to working dir (libs are already there)
-      run: mv *.exe working_dir
+      working-directory: RetroArch
+      run: mv *.exe ../working_dir
     - name: Zip just the executables and libs
       working-directory: working_dir
       run: 7z a -mx=9 ../RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
