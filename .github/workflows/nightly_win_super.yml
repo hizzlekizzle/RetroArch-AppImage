@@ -20,4 +20,4 @@ jobs:
       run: msys2do git clone https://github.com/libretro/libretro-super.git
     - name: Run the release script
       working-directory: libretro-super
-      run: ./retroarch-release.sh
+      run: msys2d0 ./retroarch-release.sh
