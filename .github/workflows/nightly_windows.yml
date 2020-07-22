@@ -50,7 +50,7 @@ jobs:
       run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt5 mingw-w64-x86_64-openssl
     - name: Create debug exe and strip regular exe
       working-directory: RetroArch
-      run: msys2do cp retroarch.exe retroarch_debug.exe && msys2do ./mingw64/bin/strip.exe -s retroarch.exe
+      run: msys2do cp retroarch.exe retroarch_debug.exe && strip.exe -s retroarch.exe
     - name: Fetch assets
       working-directory: working_dir/assets
       run: msys2do wget https://buildbot.libretro.com/assets/frontend/assets.zip && msys2do unzip assets.zip && msys2do rm assets.zip
