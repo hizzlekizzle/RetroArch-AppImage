@@ -109,14 +109,14 @@ jobs:
       run: mv *.exe ../working_dir
     - name: Zip just the executables and libs
       working-directory: working_dir
-      run: 7z a -mx=9 RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
+      run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Update-Pack.7z *.exe *dll
     - name: Upload Update Pack
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: working_dir/RetroArch-Update-Pack-Win-x86_64-Nightly.7z
+        file: working_dir/RetroArch-Win-x86_64-Nightly_Update-Pack.7z
         tag: Nightlies
-        asset_name: RetroArch-Update-Pack-Win-x86_64-Nightly.7z
+        asset_name: RetroArch-Win-x86_64-Nightly_Update-Pack.7z
         overwrite: true
     - name: Download assets package from previous job
       uses: actions/download-artifact@v2
