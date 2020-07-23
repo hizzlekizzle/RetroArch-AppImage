@@ -42,7 +42,7 @@ jobs:
     - name: Upload assets bundle
       uses: actions/upload-artifact@v2
       with:
-        name: assets
+        name: assets.7z
         path: assets.7z
         
   Linux:
@@ -74,10 +74,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Download assets package
-      uses: actions/download-artifact@v2
-      with:
-        name: assets
     - uses: numworks/setup-msys2@v1
       with:
         msystem: MINGW64
@@ -122,6 +118,10 @@ jobs:
         tag: Nightlies
         asset_name: RetroArch-Update-Pack-Win-x86_64-Nightly.7z
         overwrite: true
+    - name: Download assets package from previous job
+      uses: actions/download-artifact@v2
+      with:
+        name: assets.7z
     - name: Extract assets
       working-directory: working_dir
       run: mv ../assets.7z ./ && msys2do 7z x assets && rm -rf assets.7z
