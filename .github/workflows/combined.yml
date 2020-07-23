@@ -69,6 +69,7 @@ jobs:
         
   Windows:
     name: Build RetroArch Nightly Windows
+    needs: Assets
     runs-on: windows-latest
 
     steps:
