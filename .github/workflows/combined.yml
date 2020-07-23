@@ -73,9 +73,9 @@ jobs:
 
     steps:
     - name: Download assets package
-        uses: actions/download-artifact@v2
-        with:
-          name: assets
+      uses: actions/download-artifact@v2
+      with:
+        name: assets
     - uses: numworks/setup-msys2@v1
       with:
         msystem: MINGW64
