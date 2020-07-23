@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: git clone https://github.com/libretro/retroarch-assets.git
-    - run: mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper assets/src assets/.git
+    - run: mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper/* assets/src assets/.git
     - run: git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays && rm -rf overlays/.git
     - run: git clone https://github.com/libretro/retroarch-joypad-autoconfig.git && mv retroarch-joypad-autoconfig autoconfig && rm -rf autoconfig/.git
     - run: git clone https://github.com/libretro/libretro-super.git && mv libretro-super/dist/info ./ && rm -rf libretro-super
@@ -27,7 +27,7 @@ jobs:
         git clone https://github.com/libretro/common-shaders.git && mv common-shaders shaders_cg && rm -rf shaders_cg/.git
         git clone https://github.com/libretro/glsl-shaders.git && mv glsl-shaders shaders_glsl && rm -rf shaders_glsl/.git
         git clone https://github.com/libretro/slang-shaders.git && mv slang-shaders shaders_slang && rm -rf shaders_slang/.git
-    - run: git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./ && mv libretro-database/cht ./cheats && rm -rf libretro-database
+    - run: git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./database && mv libretro-database/cht ./cheats && rm -rf libretro-database
     - name: Zip it up!
       run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' RetroArch-Linux-x86_64-Nightly.AppImage.config.7z *
     - name: Upload Linux AppImage assets bundle
@@ -92,10 +92,7 @@ jobs:
       working-directory: RetroArch
       run: msys2do make -j8
     - name: Setup working dir
-      run: mkdir working_dir && mv assets.zip working_dir
-    - name: Extract assets
-      working-directory: working_dir
-      run: msys2do 7z x assets && rm -rf assets.7z
+      run: mkdir working_dir
     - name: Qt deploy
       working-directory: RetroArch
       run: msys2do windeployqt --release --no-patchqt --no-translations retroarch.exe
@@ -114,20 +111,9 @@ jobs:
     - name: Move executables to working dir (libs are already there)
       working-directory: RetroArch
       run: mv *.exe ../working_dir
-    - name: Zip the full release
-      working-directory: working_dir
-      run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Full.7z *
     - name: Zip just the executables and libs
       working-directory: working_dir
       run: 7z a -mx=9 RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
-    - name: Upload RetroArch release bundle
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: working_dir/RetroArch-Win-x86_64-Nightly_Full.7z
-        tag: Nightlies
-        asset_name: RetroArch-Win-x86_64-Nightly_Full.7z
-        overwrite: true
     - name: Upload Update Pack
       uses: svenstaro/upload-release-action@v2
       with:
@@ -135,4 +121,18 @@ jobs:
         file: working_dir/RetroArch-Update-Pack-Win-x86_64-Nightly.7z
         tag: Nightlies
         asset_name: RetroArch-Update-Pack-Win-x86_64-Nightly.7z
+        overwrite: true
+    - name: Extract assets
+      working-directory: working_dir
+      run: mv ../assets.7z ./ && msys2do 7z x assets && rm -rf assets.7z
+    - name: Zip the full release
+      working-directory: working_dir
+      run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Full.7z *
+    - name: Upload RetroArch release bundle
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: working_dir/RetroArch-Win-x86_64-Nightly_Full.7z
+        tag: Nightlies
+        asset_name: RetroArch-Win-x86_64-Nightly_Full.7z
         overwrite: true
