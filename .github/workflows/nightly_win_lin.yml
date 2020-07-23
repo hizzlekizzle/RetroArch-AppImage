@@ -89,9 +89,6 @@ jobs:
       run: msys2do make -j8
     - name: Setup working dir
       run: mkdir working_dir
-    - name: Qt deploy
-      working-directory: RetroArch
-      run: msys2do windeployqt --release --no-patchqt --no-translations retroarch.exe
     - name: Gather Qt libs
       working-directory: RetroArch
       run: ForEach ($l in $(msys2do ntldd.exe -R 'imageformats/*dll' | grep mingw64 | sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
@@ -107,6 +104,9 @@ jobs:
     - name: Move executables to working dir (libs are already there)
       working-directory: RetroArch
       run: mv *.exe ../working_dir
+    - name: Qt deploy
+      working-directory: working_dir
+      run: msys2do windeployqt --release --no-patchqt --no-translations retroarch.exe
     - name: Zip just the executables and libs
       working-directory: working_dir
       run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Update-Pack.7z *.exe *dll
