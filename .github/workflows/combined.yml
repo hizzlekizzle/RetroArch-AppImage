@@ -28,11 +28,6 @@ jobs:
         git clone https://github.com/libretro/glsl-shaders.git && mv glsl-shaders shaders_glsl && rm -rf shaders_glsl/.git
         git clone https://github.com/libretro/slang-shaders.git && mv slang-shaders shaders_slang && rm -rf shaders_slang/.git
     - run: git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./ && mv libretro-database/cht ./cheats && rm -rf libretro-database
-    - name: Upload assets bundle
-      uses: actions/upload-artifact@v2
-      with:
-        name: assets
-        path: ./*
     - name: Zip it up!
       run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' RetroArch-Linux-x86_64-Nightly.AppImage.config.7z *
     - name: Upload Linux AppImage assets bundle
@@ -43,6 +38,12 @@ jobs:
         tag: Nightlies
         asset_name: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
         overwrite: true
+    - run: mv RetroArch-Linux-x86_64-Nightly.AppImage.config.7z assets.7z
+    - name: Upload assets bundle
+      uses: actions/upload-artifact@v2
+      with:
+        name: assets
+        path: assets.7z
         
   Linux:
     name: Build RetroArch Linux AppImage Nightly
@@ -94,7 +95,7 @@ jobs:
       run: mkdir working_dir && mv assets.zip working_dir
     - name: Extract assets
       working-directory: working_dir
-      run: msys2do unzip assets && rm -rf assets.zip
+      run: msys2do 7z x assets && rm -rf assets.7z
     - name: Qt deploy
       working-directory: RetroArch
       run: msys2do windeployqt --release --no-patchqt --no-translations retroarch.exe
