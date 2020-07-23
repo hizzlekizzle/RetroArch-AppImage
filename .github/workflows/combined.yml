@@ -1,0 +1,136 @@
+
+name: RetroArch Nightly Build
+
+on:
+  schedule:
+  - cron: "0 5 * * *" # build every night at midnight Eastern
+  watch: # this is a hack that lets repo owners trigger a build by starring
+    types: [started]
+    if: github.actor == github.event.repository.owner.login
+
+jobs:
+  Assets:
+    name: Collect and bundle assets
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - run: git clone https://github.com/libretro/retroarch-assets.git
+    - run: mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper assets/src assets/.git
+    - run: git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays && rm -rf overlays/.git
+    - run: git clone https://github.com/libretro/retroarch-joypad-autoconfig.git && mv retroarch-joypad-autoconfig autoconfig && rm -rf autoconfig/.git
+    - run: git clone https://github.com/libretro/libretro-super.git && mv libretro-super/dist/info ./ && rm -rf libretro-super
+    - run: mkdir shaders
+    - name: fetch shaders
+      working-directory: shaders
+      run: |
+        git clone https://github.com/libretro/common-shaders.git && mv common-shaders shaders_cg && rm -rf shaders_cg/.git
+        git clone https://github.com/libretro/glsl-shaders.git && mv glsl-shaders shaders_glsl && rm -rf shaders_glsl/.git
+        git clone https://github.com/libretro/slang-shaders.git && mv slang-shaders shaders_slang && rm -rf shaders_slang/.git
+    - run: git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./ && mv libretro-database/cht ./cheats && rm -rf libretro-database
+    - name: Upload assets bundle
+      uses: actions/upload-artifact@v2
+      with:
+        name: assets
+        path: ./*
+    - name: Zip it up!
+      run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' RetroArch-Linux-x86_64-Nightly.AppImage.config.7z *
+    - name: Upload Linux AppImage assets bundle
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
+        tag: Nightlies
+        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
+        overwrite: true
+        
+  Linux:
+    name: Build RetroArch Linux AppImage Nightly
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch dependencies
+      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
+    - name: Fetch linuxdeploy
+      run: wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod +x linuxdeploy-x86_64.AppImage
+    - name: Fetch RetroArch source tree
+      run: git clone https://github.com/libretro/RetroArch.git
+    - name: Build RetroArch
+      run: cd RetroArch && mkdir AppDir && ./configure --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Linux-x86_64-Nightly.AppImage
+    - name: Upload RetroArch AppImage
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: RetroArch-Linux-x86_64-Nightly.AppImage
+        tag: Nightlies
+        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage
+        overwrite: true
+        
+  Windows:
+    name: Build RetroArch Nightly Windows
+    runs-on: windows-latest
+
+    steps:
+    - name: Download assets package
+        uses: actions/download-artifact@v2
+        with:
+          name: assets
+    - uses: numworks/setup-msys2@v1
+      with:
+        msystem: MINGW64
+    - run: msys2do pacman -S --noconfirm --disable-download-timeout --needed wget git make mingw-w64-x86_64-binutils mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-zlib mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libxml2 mingw-w64-x86_64-freetype mingw-w64-x86_64-python3 mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-drmingw mingw-w64-x86_64-qt5 mingw-w64-x86_64-openssl unzip p7zip
+    - uses: actions/checkout@v2
+    - name: Fetch the source
+      run: msys2do git clone https://github.com/libretro/RetroArch.git
+    - name: Configure
+      working-directory: RetroArch
+      run: msys2do ./configure --enable-qt
+    - name: Build
+      working-directory: RetroArch
+      run: msys2do make -j8
+    - name: Setup working dir
+      run: mkdir working_dir && mv assets.zip working_dir
+    - name: Extract assets
+      working-directory: working_dir
+      run: msys2do unzip assets && rm -rf assets.zip
+    - name: Qt deploy
+      working-directory: RetroArch
+      run: msys2do windeployqt --release --no-patchqt --no-translations retroarch.exe
+    - name: Gather Qt libs
+      working-directory: RetroArch
+      run: ForEach ($l in $(msys2do ntldd.exe -R 'imageformats/*dll' | grep mingw64 | sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
+    - name: Gather the other libs
+      working-directory: RetroArch
+      run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
+    - name: Free up some disk space
+      working-directory: RetroArch
+      run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt5 mingw-w64-x86_64-openssl
+    - name: Create debug exe and strip regular exe
+      working-directory: RetroArch
+      run: msys2do cp retroarch.exe retroarch_debug.exe && strip.exe -s retroarch.exe
+    - name: Move executables to working dir (libs are already there)
+      working-directory: RetroArch
+      run: mv *.exe ../working_dir
+    - name: Zip the full release
+      working-directory: working_dir
+      run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Full.7z *
+    - name: Zip just the executables and libs
+      working-directory: working_dir
+      run: 7z a -mx=9 RetroArch-Update-Pack-Win-x86_64-Nightly.7z *.exe *dll
+    - name: Upload RetroArch release bundle
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: working_dir/RetroArch-Win-x86_64-Nightly_Full.7z
+        tag: Nightlies
+        asset_name: RetroArch-Win-x86_64-Nightly_Full.7z
+        overwrite: true
+    - name: Upload Update Pack
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: working_dir/RetroArch-Update-Pack-Win-x86_64-Nightly.7z
+        tag: Nightlies
+        asset_name: RetroArch-Update-Pack-Win-x86_64-Nightly.7z
+        overwrite: true
