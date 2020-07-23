@@ -124,7 +124,7 @@ jobs:
         name: assets.7z
     - name: Extract assets
       working-directory: working_dir
-      run: mv ../assets.7z ./ && msys2do 7z x assets.7z && msys2do rm -rf assets.7z
+      run: mv ../assets.7z ./ && msys2do 7z x assets.7z && msys2do rm -rf assets.7z RetroArch-Win-x86_64-Nightly_Update-Pack.7z
     - name: Zip the full release
       working-directory: working_dir
       run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Full.7z *
