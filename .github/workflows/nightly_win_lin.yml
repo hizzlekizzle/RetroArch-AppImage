@@ -95,9 +95,9 @@ jobs:
     - name: Gather the other libs
       working-directory: RetroArch
       run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
-#    - name: Free up some disk space
-#      working-directory: RetroArch
-#      run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-openssl
+    - name: Free up some disk space
+      working-directory: RetroArch
+      run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-openssl
     - name: Create debug exe and strip regular exe
       working-directory: RetroArch
       run: msys2do cp retroarch.exe retroarch_debug.exe && strip.exe -s retroarch.exe
@@ -138,6 +138,8 @@ jobs:
         overwrite: true
     - name: Free up some space and prep for ANGLE
       run: msys2do rm -rf working_dir && mkdir RetroArch/angle
+    - name: Reinstall necessary packages
+      run: msys2do pacman -S --noconfirm --disable-download-timeout --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-openssl
     - name: Build for ANGLE
       working-directory: RetroArch
       run: msys2do ./configure --enable-angle --enable-dynamic_egl && msys2do make
