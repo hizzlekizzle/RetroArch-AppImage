@@ -136,3 +136,22 @@ jobs:
         tag: Nightlies
         asset_name: RetroArch-Win-x86_64-Nightly_Full.7z
         overwrite: true
+    - name: Free up some space and prep for ANGLE
+      run: msys2do rm -rf working_dir && mkdir RetroArch/angle
+    - name: Build for ANGLE
+      working-directory: RetroArch
+      run: msys2do ./configure --enable-angle --enable-dynamic_egl && msys2do make
+    - name: Gather resources
+      working-directory: RetroArch/angle
+      run: mv ../retroarch_angle.exe ./ && mv ../pkg/windows/x86_64/libEGL.dll ./ && mv ../pkg/windows/x86_64/libGLESv2.dll ./
+    - name: Zip the ANGLE bundle
+      working-directory: RetroArch/angle
+      run: 7z a -mx=9 RetroArch-ANGLE-x86_64-Nightly_Add-on.7z *
+    - name: Upload ANGLE release bundle
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: RetroArch/angle/RetroArch-ANGLE-x86_64-Nightly_Add-on.7z
+        tag: Nightlies
+        asset_name: RetroArch-ANGLE-x86_64-Nightly_Add-on.7z
+        overwrite: true
