@@ -141,8 +141,7 @@ jobs:
       working-directory: working_dir
       run: mv ../assets.7z ./ && msys2do 7z x assets.7z && msys2do rm -rf assets.7z RetroArch-Win-x86_64-Nightly_Update-Pack.7z assets/filters/audio/*.so assets/filters/video/*.so
     - name: Copy filters to assets dir
-      working-directory: working_dir/assets/filters
-      run: mv ../../RetroArch/libretro-common/audio/dsp_filters/*dll ./audio && mv ../../RetroArch/gfx/video_filters/*dll ./video
+      run: mv RetroArch/libretro-common/audio/dsp_filters/*dll working_dir/assets/filters/audio && mv RetroArch/gfx/video_filters/*dll working_dir/assets/filters/video
     - name: Put filters in the expected location
       working-directory: working_dir
       run: mv assets/filters ./
