@@ -104,6 +104,12 @@ jobs:
     - name: Gather the other libs
       working-directory: RetroArch
       run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
+    - name: Build audio filters
+      working-directory: RetroArch/libretro-common/audio/dsp_filters
+      run: msys2do make
+    - name: Build video filters
+      working-directory: RetroArch/gfx/video_filters
+      run: msys2do make
     - name: Free up some disk space
       working-directory: RetroArch
       run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-openssl
@@ -134,12 +140,6 @@ jobs:
     - name: Extract assets
       working-directory: working_dir
       run: mv ../assets.7z ./ && msys2do 7z x assets.7z && msys2do rm -rf assets.7z RetroArch-Win-x86_64-Nightly_Update-Pack.7z assets/filters/audio/*.so assets/filters/video/*.so
-    - name: Build audio filters
-      working-directory: RetroArch/libretro-common/audio/dsp_filters
-      run: msys2do make
-    - name: Build video filters
-      working-directory: RetroArch/gfx/video_filters
-      run: msys2do make
     - name: Copy filters to assets dir
       working-directory: working_dir/assets/filters
       run: mv ../../RetroArch/libretro-common/audio/dsp_filters/*dll ./audio && mv ../../RetroArch/gfx/video_filters/*dll ./video
