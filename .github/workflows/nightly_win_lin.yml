@@ -31,8 +31,8 @@ jobs:
     - run: mkdir -p filters/audio && mkdir -p filters/video
     - run: git clone https://github.com/libretro/RetroArch.git
     - name: Build audio filters
-      working-directory: RetroArch/libretro-common/audio
-      run: make && mv *so ../../../filters/audio && mv *dsp ../../../filters/audio
+      working-directory: RetroArch/libretro-common/audio/dsp_filters
+      run: make && mv *so ../../../../filters/audio && mv *dsp ../../../../filters/audio
     - name: Build video filters
       working-directory: RetroArch/gfx/video_filters
       run: make && mv *so ../../../filters/video && mv *filt ../../../filters/video
