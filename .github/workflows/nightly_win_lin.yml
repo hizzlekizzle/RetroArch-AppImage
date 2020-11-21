@@ -38,7 +38,13 @@ jobs:
       run: make && mv *so ../../../filters/video && mv *filt ../../../filters/video
     - run: rm -rf RetroArch
     - name: Zip it up!
-      run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' RetroArch-Linux-x86_64-Nightly.AppImage.config.7z *
+      run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' assets.7z *
+    - name: Upload Windows assets bundle
+      uses: actions/upload-artifact@v2
+      with:
+        name: assets.7z
+        path: assets.7z
+    - run: rm assets.7z && mkdir retroarch && mv * retroarch/ && 7z a -mx=9 RetroArch-Linux-x86_64-Nightly.AppImage.config.7z *
     - name: Upload Linux AppImage assets bundle
       uses: svenstaro/upload-release-action@v2
       with:
@@ -47,12 +53,6 @@ jobs:
         tag: Nightlies
         asset_name: RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
         overwrite: true
-    - run: mv RetroArch-Linux-x86_64-Nightly.AppImage.config.7z assets.7z
-    - name: Upload assets bundle
-      uses: actions/upload-artifact@v2
-      with:
-        name: assets.7z
-        path: assets.7z
         
   Linux:
     name: Build RetroArch Linux AppImage Nightly
