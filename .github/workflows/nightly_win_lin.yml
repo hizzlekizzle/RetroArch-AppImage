@@ -44,7 +44,7 @@ jobs:
       with:
         name: assets.7z
         path: assets.7z
-    - run: rm assets.7z && mkdir retroarch && mv !(retroarch) retroarch/ && 7z a -mx=9 RetroArch-Linux-x86_64-Nightly.AppImage.config.7z *
+    - run: rm assets.7z && mkdir retroarch && mv !\(retroarch\) retroarch/ && 7z a -mx=9 RetroArch-Linux-x86_64-Nightly.AppImage.config.7z *
     - name: Upload Linux AppImage assets bundle
       uses: svenstaro/upload-release-action@v2
       with:
