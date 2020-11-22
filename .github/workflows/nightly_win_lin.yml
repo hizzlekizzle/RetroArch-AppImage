@@ -175,7 +175,7 @@ jobs:
     - name: Move executables to working dir (libs are already there)
       working-directory: RetroArch
       run: mv *.exe ../working_dir
-    - name: Qt deploy
+    - shell: msys2 {0}
       working-directory: working_dir
       run: windeployqt --release --no-patchqt --no-translations retroarch.exe
     - name: Zip just the executables and libs
