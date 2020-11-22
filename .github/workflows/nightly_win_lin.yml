@@ -156,10 +156,10 @@ jobs:
       run: mkdir working_dir
     - name: Gather Qt libs
       working-directory: RetroArch
-      run: ForEach ($l in $(ntldd.exe -R 'imageformats/*dll' | grep mingw64 | sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
+      run: ForEach ($l in $(msys2 -c ntldd.exe -R 'imageformats/*dll' | grep mingw64 | sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
     - name: Gather the other libs
       working-directory: RetroArch
-      run: ForEach ($l in $(ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}   
+      run: ForEach ($l in $(msys2 -c ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}   
     - shell: msys2 {0}
       working-directory: RetroArch/libretro-common/audio/dsp_filters
       run: make
