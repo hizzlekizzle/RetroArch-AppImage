@@ -113,43 +113,62 @@ jobs:
     steps:
     - uses: msys2/setup-msys2@v2
       with:
-        msystem: MINGW64
-    - run: msys2do pacman -S --noconfirm --disable-download-timeout --needed wget git make mingw-w64-x86_64-binutils mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-zlib mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libxml2 mingw-w64-x86_64-freetype mingw-w64-x86_64-python3 mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-drmingw mingw-w64-x86_64-qt5 mingw-w64-x86_64-openssl unzip p7zip
+        update: true
+        install: >-
+          base-devel
+          git
+          wget
+          make
+          mingw-w64-x86_64-binutils
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-ntldd
+          mingw-w64-x86_64-zlib
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-SDL2
+          mingw-w64-x86_64-libxml2
+          mingw-w64-x86_64-freetype
+          mingw-w64-x86_64-python3
+          mingw-w64-x86_64-ffmpeg
+          mingw-w64-x86_64-drmingw
+          mingw-w64-x86_64-qt5
+          mingw-w64-x86_64-openssl
+          unzip
+          p7zip
     - uses: actions/checkout@v2
     - name: Fetch the source
-      run: msys2do git clone https://github.com/libretro/RetroArch.git
+      run: git clone https://github.com/libretro/RetroArch.git
     - name: Configure
       working-directory: RetroArch
-      run: msys2do ./configure --enable-qt
+      run: ./configure --enable-qt
     - name: Build
       working-directory: RetroArch
-      run: msys2do make -j8
+      run: make -j8
     - name: Setup working dir
       run: mkdir working_dir
     - name: Gather Qt libs
       working-directory: RetroArch
-      run: ForEach ($l in $(msys2do ntldd.exe -R 'imageformats/*dll' | grep mingw64 | sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
+      run: ForEach ($l in $(ntldd.exe -R 'imageformats/*dll' | grep mingw64 | sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
     - name: Gather the other libs
       working-directory: RetroArch
-      run: ForEach ($l in $(msys2do ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
+      run: ForEach ($l in $(ntldd.exe -R '*.exe'|grep mingw64|sed -e 's/^[ \t]*//'|cut -d' ' -f3)){cp "$l" ../working_dir}
     - name: Build audio filters
       working-directory: RetroArch/libretro-common/audio/dsp_filters
-      run: msys2do make
+      run: make
     - name: Build video filters
       working-directory: RetroArch/gfx/video_filters
-      run: msys2do make
+      run: make
     - name: Free up some disk space
       working-directory: RetroArch
-      run: msys2do rm -rf .git && msys2do pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-openssl
+      run: rm -rf .git && pacman -Rsu --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-openssl
     - name: Create debug exe and strip regular exe
       working-directory: RetroArch
-      run: msys2do cp retroarch.exe retroarch_debug.exe && strip.exe -s retroarch.exe
+      run: cp retroarch.exe retroarch_debug.exe && strip.exe -s retroarch.exe
     - name: Move executables to working dir (libs are already there)
       working-directory: RetroArch
       run: mv *.exe ../working_dir
     - name: Qt deploy
       working-directory: working_dir
-      run: msys2do windeployqt --release --no-patchqt --no-translations retroarch.exe
+      run: windeployqt --release --no-patchqt --no-translations retroarch.exe
     - name: Zip just the executables and libs
       working-directory: working_dir
       run: 7z a -mx=9 RetroArch-Win-x86_64-Nightly_Update-Pack.7z *.exe *dll
