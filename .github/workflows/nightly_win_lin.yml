@@ -27,9 +27,9 @@ jobs:
         git clone https://github.com/libretro/common-shaders.git && mv common-shaders shaders_cg && rm -rf shaders_cg/.git
         git clone https://github.com/libretro/glsl-shaders.git && mv glsl-shaders shaders_glsl && rm -rf shaders_glsl/.git
         git clone https://github.com/libretro/slang-shaders.git && mv slang-shaders shaders_slang && rm -rf shaders_slang/.git
-        run: git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./database && mv libretro-database/cht ./cheats && rm -rf libretro-database
-        mkdir -p filters/audio && mkdir -p filters/video
+        git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./database && mv libretro-database/cht ./cheats && rm -rf libretro-database
         git clone https://github.com/libretro/RetroArch.git
+        mkdir -p filters/audio && mkdir -p filters/video
     - name: Build audio filters
       working-directory: RetroArch/libretro-common/audio/dsp_filters
       run: make && mv *so ../../../../filters/audio && mv *dsp ../../../../filters/audio
