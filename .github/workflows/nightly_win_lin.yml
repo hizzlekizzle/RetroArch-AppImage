@@ -15,21 +15,21 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - run: git clone https://github.com/libretro/retroarch-assets.git
-    - run: mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper/* assets/src assets/.git
-    - run: git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays && rm -rf overlays/.git
-    - run: git clone https://github.com/libretro/retroarch-joypad-autoconfig.git && mv retroarch-joypad-autoconfig autoconfig && rm -rf autoconfig/.git
-    - run: git clone https://github.com/libretro/libretro-super.git && mv libretro-super/dist/info ./ && rm -rf libretro-super
-    - run: mkdir shaders
+    - run: |
+        git clone https://github.com/libretro/retroarch-assets.git && mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper/* assets/src assets/.git
+        git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays && rm -rf overlays/.git
+        git clone https://github.com/libretro/retroarch-joypad-autoconfig.git && mv retroarch-joypad-autoconfig autoconfig && rm -rf autoconfig/.git
+        git clone https://github.com/libretro/libretro-super.git && mv libretro-super/dist/info ./ && rm -rf libretro-super
+        mkdir shaders
     - name: fetch shaders
       working-directory: shaders
       run: |
         git clone https://github.com/libretro/common-shaders.git && mv common-shaders shaders_cg && rm -rf shaders_cg/.git
         git clone https://github.com/libretro/glsl-shaders.git && mv glsl-shaders shaders_glsl && rm -rf shaders_glsl/.git
         git clone https://github.com/libretro/slang-shaders.git && mv slang-shaders shaders_slang && rm -rf shaders_slang/.git
-    - run: git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./database && mv libretro-database/cht ./cheats && rm -rf libretro-database
-    - run: mkdir -p filters/audio && mkdir -p filters/video
-    - run: git clone https://github.com/libretro/RetroArch.git
+        run: git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./database && mv libretro-database/cht ./cheats && rm -rf libretro-database
+        mkdir -p filters/audio && mkdir -p filters/video
+        git clone https://github.com/libretro/RetroArch.git
     - name: Build audio filters
       working-directory: RetroArch/libretro-common/audio/dsp_filters
       run: make && mv *so ../../../../filters/audio && mv *dsp ../../../../filters/audio
@@ -47,7 +47,7 @@ jobs:
     - run: |
         mkdir retroarch
         mv assets retroarch/
-        mv common-overlays retroarch/
+        mv overlays retroarch/
         mv autoconfig retroarch/
         mv info retroarch/
         mv shaders retroarch/
