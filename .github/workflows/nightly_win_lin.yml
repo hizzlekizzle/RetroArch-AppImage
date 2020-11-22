@@ -215,7 +215,7 @@ jobs:
 #      run: msys2do pacman -S --noconfirm --disable-download-timeout --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-openssl    
     - shell: msys2 {0}
       working-directory: RetroArch
-      run: ./configure --enable-angle --enable-dynamic_egl && msys2do make
+      run: ./configure --enable-angle --enable-dynamic_egl && make
     - name: Gather resources
       working-directory: RetroArch/angle
       run: mv ../retroarch_angle.exe ./ && mv ../pkg/windows/x86_64/libEGL.dll ./ && mv ../pkg/windows/x86_64/libGLESv2.dll ./
