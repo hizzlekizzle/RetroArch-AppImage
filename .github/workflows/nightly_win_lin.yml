@@ -55,7 +55,7 @@ jobs:
         mv filters retroarch/
         mkdir RetroArch-Linux-x86_64-Nightly.AppImage.config
         mv retroarch/ RetroArch-Linux-x86_64-Nightly.AppImage.config
-        7z a -mx=9 RetroArch-Linux-x86_64-Nightly.AppImage.config RetroArch-Linux-x86_64-Nightly.AppImage.config.7z
+        7z a -mx=9 RetroArch-Linux-x86_64-Nightly.AppImage.config.7z RetroArch-Linux-x86_64-Nightly.AppImage.config
     - name: Upload Linux AppImage assets bundle
       uses: svenstaro/upload-release-action@v2
       with:
