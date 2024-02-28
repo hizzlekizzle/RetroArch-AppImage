@@ -1,0 +1,117 @@
+name: RetroArch AppImage Nightly Build
+
+on:
+  schedule:
+  - cron: "0 5 * * *" # build every night at midnight Eastern
+  watch: # this is a hack that lets repo owners trigger a build by starring
+    types: [started]
+    if: github.actor == github.event.repository.owner.login
+
+jobs:
+  Assets:
+    name: Collect and bundle assets
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        git clone https://github.com/libretro/retroarch-assets.git && mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper/* assets/src assets/.git
+        git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays && rm -rf overlays/.git
+        git clone https://github.com/libretro/retroarch-joypad-autoconfig.git && mv retroarch-joypad-autoconfig autoconfig && rm -rf autoconfig/.git
+        git clone https://github.com/libretro/libretro-super.git && mv libretro-super/dist/info ./ && rm -rf libretro-super
+        mkdir shaders
+    - name: fetch shaders
+      working-directory: shaders
+      run: |
+#        git clone https://github.com/libretro/common-shaders.git && mv common-shaders shaders_cg && rm -rf shaders_cg/.git
+        git clone https://github.com/libretro/glsl-shaders.git && mv glsl-shaders shaders_glsl && rm -rf shaders_glsl/.git
+        git clone https://github.com/libretro/slang-shaders.git && mv slang-shaders shaders_slang && rm -rf shaders_slang/.git
+    - run: |
+        git clone https://github.com/libretro/libretro-database.git && mv libretro-database/rdb ./database && mv libretro-database/cht ./cheats && rm -rf libretro-database
+        git clone https://github.com/libretro/RetroArch.git
+        mkdir -p filters/audio && mkdir -p filters/video
+    - name: Build audio filters
+      working-directory: RetroArch/libretro-common/audio/dsp_filters
+      run: make && mv *so ../../../../filters/audio && mv *dsp ../../../../filters/audio
+    - name: Build video filters
+      working-directory: RetroArch/gfx/video_filters
+      run: make && mv *so ../../../filters/video && mv *filt ../../../filters/video
+    - run: rm -rf RetroArch
+    - name: Zip it up!
+      run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' assets.7z *
+    - name: Upload Windows assets bundle
+      uses: actions/upload-artifact@v2
+      with:
+        name: assets.7z
+        path: assets.7z
+    - run: |
+        mkdir retroarch
+        mv assets retroarch/
+        mv overlays retroarch/overlay
+        mv autoconfig retroarch/
+        mv info retroarch/cores
+        mv shaders retroarch/
+        mv filters retroarch/
+        mkdir retroarch/database && mv database retroarch/database/rdb
+        mv cheats retroarch/
+        mkdir RetroArch-Linux-x86_64-Nightly.AppImage.home
+        mv retroarch/ RetroArch-Linux-x86_64-Nightly.AppImage.home
+        7z a -mx=9 RetroArch-Linux-x86_64-Nightly.AppImage.home.7z RetroArch-Linux-x86_64-Nightly.AppImage.home
+    - name: Upload Linux AppImage assets bundle
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: RetroArch-Linux-x86_64-Nightly.AppImage.home.7z
+        tag: Nightlies
+        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage.home.7z
+        overwrite: true
+        
+  Linux:
+    name: Build RetroArch Linux AppImage Nightly
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch dependencies
+      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev nvidia-cg-toolkit libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev qt5dxcb-plugin wayland-protocols x11proto-xext-dev zlib1g-dev
+    - name: Fetch linuxdeploy
+      run: wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod +x linuxdeploy-x86_64.AppImage
+    - name: Fetch RetroArch source tree
+      run: git clone https://github.com/libretro/RetroArch.git
+    - name: Build RetroArch
+      run: cd RetroArch && mkdir AppDir && ./configure --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Linux-x86_64-Nightly.AppImage
+    - name: Check AppImage for common issues
+      run: wget https://github.com/TheAssassin/appimagelint/releases/download/continuous/appimagelint-x86_64.AppImage && chmod +x appimagelint-x86_64.AppImage && ./appimagelint-x86_64.AppImage RetroArch-Linux-x86_64-Nightly.AppImage
+    - name: Upload RetroArch AppImage
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: RetroArch-Linux-x86_64-Nightly.AppImage
+        tag: Nightlies
+        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage
+        overwrite: true
+        
+  Linux_LTS:
+    name: Build RetroArch LTS Linux AppImage Nightly
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch dependencies
+      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev nvidia-cg-toolkit libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
+    - name: Fetch linuxdeploy
+      run: wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod +x linuxdeploy-x86_64.AppImage
+    - name: Fetch RetroArch source tree
+      run: git clone https://github.com/libretro/RetroArch.git
+    - name: Build RetroArch
+      run: cd RetroArch && mkdir AppDir && ./configure --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Linux-x86_64-Nightly.AppImage
+    - name: Check AppImage for common issues
+      run: wget https://github.com/TheAssassin/appimagelint/releases/download/continuous/appimagelint-x86_64.AppImage && chmod +x appimagelint-x86_64.AppImage && ./appimagelint-x86_64.AppImage RetroArch-Linux-x86_64-Nightly.AppImage
+    - name: Upload RetroArch AppImage
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: RetroArch-Linux-x86_64-Nightly.AppImage
+        tag: Linux_LTS_Nightlies
+        asset_name: RetroArch-Linux-x86_64-Nightly.AppImage
+        overwrite: true
