@@ -72,13 +72,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Fetch dependencies
-      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev nvidia-cg-toolkit libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev qt5dxcb-plugin wayland-protocols x11proto-xext-dev zlib1g-dev
+      run: sudo apt-get update ; sudo apt-get install python3-all-dev alsa-utils chrpath  lsb-release yasm libass-dev libavdevice-dev libcaca-dev libdrm-dev libflac-dev libfreetype6-dev  ibfribidi-dev libgbm-dev libglm-dev libglvnd-dev  libjack-dev liblua5.3-dev libminiupnpc-dev libmpv-dev libopenal-dev libosmesa6-dev libsdl2-dev libsixel-dev libslang2-dev libssl-dev libsystemd-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libwayland-dev libwayland-egl-backend-dev libx11-xcb-dev libxcb-shm0-dev libxkbcommon-dev libxml2-dev qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
     - name: Fetch linuxdeploy
       run: wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod +x linuxdeploy-x86_64.AppImage
     - name: Fetch RetroArch source tree
       run: git clone https://github.com/libretro/RetroArch.git
     - name: Build RetroArch
-      run: cd RetroArch && mkdir AppDir && ./configure --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Linux-x86_64-Nightly.AppImage
+      run: cd RetroArch && mkdir AppDir && ./configure --disable-qt --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Linux-x86_64-Nightly.AppImage
     - name: Check AppImage for common issues
       run: wget https://github.com/TheAssassin/appimagelint/releases/download/continuous/appimagelint-x86_64.AppImage && chmod +x appimagelint-x86_64.AppImage && ./appimagelint-x86_64.AppImage RetroArch-Linux-x86_64-Nightly.AppImage
     - name: Upload RetroArch AppImage
@@ -97,13 +97,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Fetch dependencies
-      run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev nvidia-cg-toolkit libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
+      run: sudo apt-get update ; sudo apt-get install python3-all-dev alsa-utils chrpath  lsb-release yasm libass-dev libavdevice-dev libcaca-dev libdrm-dev libflac-dev libfreetype6-dev  ibfribidi-dev libgbm-dev libglm-dev libglvnd-dev  libjack-dev liblua5.3-dev libminiupnpc-dev libmpv-dev libopenal-dev libosmesa6-dev libsdl2-dev libsixel-dev libslang2-dev libssl-dev libsystemd-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libwayland-dev libwayland-egl-backend-dev libx11-xcb-dev libxcb-shm0-dev libxkbcommon-dev libxml2-dev qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
     - name: Fetch linuxdeploy
       run: wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod +x linuxdeploy-x86_64.AppImage
     - name: Fetch RetroArch source tree
       run: git clone https://github.com/libretro/RetroArch.git
     - name: Build RetroArch
-      run: cd RetroArch && mkdir AppDir && ./configure --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Linux-x86_64-Nightly.AppImage
+      run: cd RetroArch && mkdir AppDir && ./configure --disable-qt --prefix=/usr && make -j8 && make install DESTDIR=AppDir prefix=/usr && ../linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage && mv RetroArch*.AppImage ../RetroArch-Linux-x86_64-Nightly.AppImage
     - name: Check AppImage for common issues
       run: wget https://github.com/TheAssassin/appimagelint/releases/download/continuous/appimagelint-x86_64.AppImage && chmod +x appimagelint-x86_64.AppImage && ./appimagelint-x86_64.AppImage RetroArch-Linux-x86_64-Nightly.AppImage
     - name: Upload RetroArch AppImage
