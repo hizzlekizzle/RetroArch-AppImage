@@ -1,4 +1,3 @@
-
 name: RetroArch Nightly Build
 
 on:
@@ -24,7 +23,6 @@ jobs:
     - name: fetch shaders
       working-directory: shaders
       run: |
-#        git clone https://github.com/libretro/common-shaders.git && mv common-shaders shaders_cg && rm -rf shaders_cg/.git
         git clone https://github.com/libretro/glsl-shaders.git && mv glsl-shaders shaders_glsl && rm -rf shaders_glsl/.git
         git clone https://github.com/libretro/slang-shaders.git && mv slang-shaders shaders_slang && rm -rf shaders_slang/.git
     - run: |
