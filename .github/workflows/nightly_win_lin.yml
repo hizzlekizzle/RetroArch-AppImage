@@ -107,7 +107,7 @@ jobs:
     - name: Check AppImage for common issues
       run: wget https://github.com/TheAssassin/appimagelint/releases/download/continuous/appimagelint-x86_64.AppImage && chmod +x appimagelint-x86_64.AppImage && ./appimagelint-x86_64.AppImage RetroArch-Linux-x86_64-Nightly.AppImage
     - name: Upload RetroArch AppImage
-      uses: svenstaro/upload-release-action@v2
+      uses: svenstaro/upload-release-action@v4
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: RetroArch-Linux-x86_64-Nightly.AppImage
