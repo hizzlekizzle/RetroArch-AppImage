@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - run: |
         git clone https://github.com/libretro/retroarch-assets.git && mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper/* assets/src assets/.git
         git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays && rm -rf overlays/.git
@@ -39,7 +39,7 @@ jobs:
     - name: Zip it up!
       run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' assets.7z *
     - name: Upload Windows assets bundle
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifactv4
       with:
         name: assets.7z
         path: assets.7z
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkoutv4
     - name: Fetch dependencies
       run: sudo apt-get update ; sudo apt-get install libfuse2 python3-all-dev alsa-utils chrpath  lsb-release yasm libass-dev libavdevice-dev libcaca-dev libdrm-dev libflac-dev libfreetype6-dev libfribidi-dev libgbm-dev libglm-dev libglvnd-dev  libjack-dev liblua5.3-dev libminiupnpc-dev libmpv-dev libopenal-dev libosmesa6-dev libsdl2-dev libsixel-dev libslang2-dev libssl-dev libsystemd-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libwayland-dev libwayland-egl-backend-dev libx11-xcb-dev libxcb-shm0-dev libxkbcommon-dev libxml2-dev qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
     - name: Fetch linuxdeploy
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkoutv4
     - name: Fetch dependencies
       run: sudo apt-get update ; sudo apt-get install python3-all-dev alsa-utils chrpath  lsb-release yasm libass-dev libavdevice-dev libcaca-dev libdrm-dev libflac-dev libfreetype6-dev libfribidi-dev libgbm-dev libglm-dev libglvnd-dev  libjack-dev liblua5.3-dev libminiupnpc-dev libmpv-dev libopenal-dev libosmesa6-dev libsdl2-dev libsixel-dev libslang2-dev libssl-dev libsystemd-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libwayland-dev libwayland-egl-backend-dev libx11-xcb-dev libxcb-shm0-dev libxkbcommon-dev libxml2-dev qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
     - name: Fetch linuxdeploy

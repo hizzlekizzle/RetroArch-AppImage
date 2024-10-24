@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - run: |
         git clone https://github.com/libretro/retroarch-assets.git && mv retroarch-assets assets && rm -rf assets/branding assets/wallpaper/* assets/src assets/.git
         git clone https://github.com/libretro/common-overlays.git && mv common-overlays overlays && rm -rf overlays/.git
@@ -39,7 +39,7 @@ jobs:
     - name: Zip it up!
       run: 7z a -mx=9 -x'!README.md' -x'!LICENSE' assets.7z *
     - name: Upload Windows assets bundle
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: assets.7z
         path: assets.7z
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Fetch dependencies
       run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev nvidia-cg-toolkit libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev qt5dxcb-plugin wayland-protocols x11proto-xext-dev zlib1g-dev
     - name: Fetch linuxdeploy
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Fetch dependencies
       run: sudo apt-get update ; sudo apt-get install libasound2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev libc6-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libfreetype6-dev nvidia-cg-toolkit libgbm-dev libglm-dev libjack-jackd2-dev libopenal-dev libpulse-dev libsdl2-dev libswscale-dev libudev-dev libusb-1.0-0-dev libv4l-dev libvulkan-dev libxinerama-dev libxml2-dev libxv-dev libxxf86vm-dev pkg-config python3-dev qt5-default qtbase5-dev wayland-protocols x11proto-xext-dev zlib1g-dev
     - name: Fetch linuxdeploy
@@ -145,7 +145,7 @@ jobs:
 #          mingw-w64-x86_64-nvidia-cg-toolkit
 #          unzip
 #          p7zip
-#    - uses: actions/checkout@v2
+#    - uses: actions/checkout@v4
 #    - name: Fetch the source
 #      run: git clone https://github.com/libretro/RetroArch.git
 #    - shell: msys2 {0}
@@ -191,7 +191,7 @@ jobs:
 #        asset_name: RetroArch-Win-x86_64-Nightly_Update-Pack.7z
 #        overwrite: true
 #    - name: Download assets package from previous job
-#      uses: actions/download-artifact@v2
+#      uses: actions/download-artifact@v4
 #      with:
 #        name: assets.7z
 #    - shell: msys2 {0}
